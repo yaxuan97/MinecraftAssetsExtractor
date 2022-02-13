@@ -1,0 +1,2 @@
+# MinecraftAssetsExtractor
+ 提取minecraft的资源文件。不包括已存在于minecraft.jar中的文件
