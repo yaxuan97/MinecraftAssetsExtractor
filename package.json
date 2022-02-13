@@ -1,0 +1,36 @@
+{
+	"main": "app/index.html",
+	"name": "minecraft-assets-extractor",
+	"title": "Minecraft Assets Extractor",
+	"window": {
+		"width": 1366,
+		"height": 768,
+		"resizable": false,
+		"fullscreen": false,
+		"frame": true,
+		"position": "center"
+	},
+	"description": "提取 Minecraft 资源文件",
+	"version": "0.1.0",
+	"maintainers": [
+		{
+			"name": "yaxuan97",
+			"email": "admin@yaxuan97.cn"
+		}
+	],
+	"contributors": [
+		{
+			"name": "yaxuan97",
+			"email": "admin@yaxuan97.cn"
+		}
+	],
+	"license": [
+		{
+			"type": "gpl-3.0",
+			"url": ""
+		}
+	],
+	"dependencies": {
+		"archiver": "^5.3.0"
+	}
+}

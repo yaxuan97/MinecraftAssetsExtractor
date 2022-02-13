@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>minecraft Assets Extractor</title>
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<form>
+		<fieldset>
+			<legend>第一步：选择 .minecraft 文件夹的位置</legend>
+			<label>
+				<input type="radio" name="mcpath" checked>
+				<span>使用默认位置</span>
+			</label>
+			<label>
+				<input type="radio" name="mcpath">
+				<span>使用自定义位置</span>
+			</label>
+			<div>
+				<input type="text" name="pathtext" id="pathtext" disabled>
+				<input type="button" value="浏览" disabled id="mcpathbtn">
+			</div>
+			<input type="file" nwdirectory id="mcpathselector">
+			<div class="btn" id="confirmpath">读取 minecraft 信息</div>
+		</fieldset>
+		<fieldset>
+			<legend>第二步：选择需要提取的版本</legend>
+			<select name="versionselector" id="versionselector">
+
+			</select>
+			<div class="btn" id="confirmindex">提取文件</div>
+		</fieldset>
+		<fieldset>
+			<legend>第三步：验证和提取文件</legend>
+			<div id="stats">
+				<progress value="0" max="100" id="statsbar"></progress>
+				<span>验证文件：<span id="statsprogresscurrent">0</span>/<span class="progresstotal">0</span></span>
+			</div>
+			<div id="copies">
+				<progress value="0" max="100" id="copiesbar"></progress>
+				<span>提取文件：<span id="copiesprogresscurrent">0</span>/<span class="progresstotal">0</span></span>
+			</div>
+			<div>
+				<input type="text" name="completepathtext" id="completepathtext" disabled>
+				<input type="button" value="浏览" disabled id="completemcpathbtn">
+			</div>
+			<input type="file" nwdirectory id="completemcpathselector">
+			<div class="btn" id="confirmcompletepath">确认导出</div>
+		</fieldset>
+	</form>
+	<script src="js/MinecraftAssetsExtractor.js"></script>
+	<script type="module">
+		import Ziplib from './js/Ziplib.js';
+		// 第一步
+		let mcpath = MinecraftAssetsExtractor.getDefaultMinecraftPath();
+		let mcpathbtn = document.getElementById("mcpathbtn");
+		let mcpathselector = document.getElementById("mcpathselector");
+		let pathtext = document.getElementById("pathtext");
+		pathtext.value = mcpath;
+		let pathradios = document.getElementsByName("mcpath");
+		let mcindexes = [];
+		let minecraftAssetsExtractor;
+		
+		pathradios[0].addEventListener("click", () => {
+			pathtext.disabled = true;
+			mcpathbtn.disabled = true;
+			mcpath = MinecraftAssetsExtractor.getDefaultMinecraftPath();
+			pathtext.value = mcpath;
+		});
+		pathradios[1].addEventListener("click", () => {
+			pathtext.disabled = false;
+			mcpathbtn.disabled = false;
+		});
+		mcpathbtn.addEventListener("click", () => {
+			mcpathselector.click();
+		});
+		mcpathselector.addEventListener("change", () => {
+			pathtext.value = mcpathselector.value;
+			mcpath = mcpathselector.value;
+		});
+		let confirmpath = document.getElementById("confirmpath");
+		confirmpath.addEventListener("click", () => {
+			minecraftAssetsExtractor = new MinecraftAssetsExtractor(mcpath);
+			mcindexes = minecraftAssetsExtractor.getMinecraftIndexes();
+			for (const _version of mcindexes) {
+				let option = document.createElement("option");
+				version = _version.substring(0, _version.length - 5);
+				option.value = _version;
+				option.innerText = version;
+				versionselector.appendChild(option);
+			}
+		});
+
+		// 第二步
+		let versionselector = document.getElementById("versionselector");
+		let confirmindex = document.getElementById("confirmindex");
+		let version = "";
+
+		let progress;
+		let statsprogressbar = document.getElementById("statsbar");
+		let statsprogresscurrent = document.getElementById("statsprogresscurrent");
+		let copiesprogressbar = document.getElementById("copiesbar");
+		let copiesprogresscurrent = document.getElementById("copiesprogresscurrent");
+		let progresstotal = document.getElementsByClassName("progresstotal");
+
+		let completemcpathtext = document.getElementById("completepathtext");
+		let completemcpathbtn = document.getElementById("completemcpathbtn");
+		confirmindex.addEventListener("click", () => {
+			version = versionselector.value;
+			minecraftAssetsExtractor.getMinecraftAssets(version);
+			progress = minecraftAssetsExtractor.getProgress();
+			let total = progress.getTotal();
+			progresstotal[0].innerText = total;
+			progresstotal[1].innerText = total;
+			statsprogressbar.max = total;
+			copiesprogressbar.max = total;
+			let interval = setInterval(()=>{
+				let statscurrent = progress.getStatsCurrent();
+				let copiescurrent = progress.getCopiesCurrent();
+				statsprogresscurrent.innerText = statscurrent;
+				statsprogressbar.value = statscurrent;
+				copiesprogresscurrent.innerText = copiescurrent;
+				copiesprogressbar.value = copiescurrent;
+				if(copiescurrent == total) {
+					clearInterval(interval);
+					window.alert("已准备好所有资源，请选择文件导出位置。");
+					completemcpathtext.disabled = false;
+					completemcpathbtn.disabled = false;
+				}
+			}, 100);
+		})
+
+		// 第三步
+		let completemcpathselector = document.getElementById("completemcpathselector");
+		let completemcpath = "";
+		completemcpathbtn.addEventListener("click", () => {
+			completemcpathselector.click();
+		});
+		completemcpathselector.addEventListener("change", () => {
+			completepathtext.value = completemcpathselector.value;
+			completemcpath = completemcpathselector.value;
+		});
+		let confirmcompletepath = document.getElementById("confirmcompletepath");
+		confirmcompletepath.addEventListener("click", () => {
+			if(completemcpath == "") {
+				window.alert("请选择文件导出位置。");
+				return;
+			} else {
+				let eventEmitter = Ziplib.createZipFile(minecraftAssetsExtractor.getTempPath(), completemcpath);
+				eventEmitter.on("zipFileCreated", (err) => {
+					if (err !== undefined) {
+						window.alert("导出失败：" + err.message);
+					}else {
+						window.alert("已完成导出。");
+					}
+				});
+			}
+		});
+	</script>
+</body>
+</html>
