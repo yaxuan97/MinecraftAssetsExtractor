@@ -91,19 +91,16 @@
 				versionselector.appendChild(option);
 			}
 		});
-
 		// 第二步
 		let versionselector = document.getElementById("versionselector");
 		let confirmindex = document.getElementById("confirmindex");
 		let version = "";
-
 		let progress;
 		let statsprogressbar = document.getElementById("statsbar");
 		let statsprogresscurrent = document.getElementById("statsprogresscurrent");
 		let copiesprogressbar = document.getElementById("copiesbar");
 		let copiesprogresscurrent = document.getElementById("copiesprogresscurrent");
 		let progresstotal = document.getElementsByClassName("progresstotal");
-
 		let completemcpathtext = document.getElementById("completepathtext");
 		let completemcpathbtn = document.getElementById("completemcpathbtn");
 		confirmindex.addEventListener("click", () => {
@@ -130,7 +127,6 @@
 				}
 			}, 100);
 		})
-
 		// 第三步
 		let completemcpathselector = document.getElementById("completemcpathselector");
 		let completemcpath = "";

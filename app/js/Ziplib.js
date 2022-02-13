@@ -22,5 +22,4 @@ class Ziplib {
 		return eventEmitter;
 	}
 }
-
 export default Ziplib;

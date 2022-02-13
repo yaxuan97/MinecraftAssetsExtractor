@@ -1,16 +1,12 @@
 const env = require("process").env;
 const fs = require("fs");
 const path = require("path");
-
 class MinecraftAssetsExtractor {
 	#assetsPath;
 	#indexesPath;
 	#objectsPath;
-
 	#tempPath;
-
 	#progress;
-
 	#jarFile;
 	constructor(mcpath) {
 		this.#assetsPath = path.join(mcpath, "assets");
@@ -70,7 +66,6 @@ class MinecraftAssetsExtractor {
 		return this.#progress;
 	}
 }
-
 class ProgressCounter {
 	#total;
 	#statsCurrent;
@@ -96,4 +91,3 @@ class ProgressCounter {
 		this.#copiesCurrent++;
 	}
 }
-
