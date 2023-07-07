@@ -144,12 +144,10 @@
 				return;
 			} else {
 				let eventEmitter = Ziplib.createZipFile(minecraftAssetsExtractor.getTempPath(), completemcpath);
-				eventEmitter.on("zipFileCreated", (err) => {
-					if (err !== undefined) {
-						window.alert("导出失败：" + err.message);
-					}else {
-						window.alert("已完成导出。");
-					}
+				confirmcompletepath.innerHTML = "导出中...";
+				eventEmitter.on("zipFileCreated", () => {
+					window.alert("已完成导出。");
+					confirmcompletepath.innerHTML = "确认导出";
 				});
 			}
 		});
